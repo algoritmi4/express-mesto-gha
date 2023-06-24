@@ -27,10 +27,17 @@ const createCard = (req, res) => {
 
 const deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.id)
-    .then((card) => res.status(200).send({ data: card }))
+    .then((card) => {
+      if (!card) {
+        res.status(CastErrorStatus).send({ message: 'Карточка с указанным id не найдена' });
+        return;
+      }
+
+      res.status(200).send({ data: card });
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(CastErrorStatus).send({ message: 'Карточка с указанным id не найдена' });
+        res.status(ValidationErrorStatus).send({ message: 'Передан некорректный id' });
         return;
       }
 
@@ -52,6 +59,11 @@ const likeCard = (req, res) => {
         return;
       }
 
+      if (err.name === 'CastError') {
+        res.status(ValidationErrorStatus).send({ message: 'Передан некорректный id' });
+        return;
+      }
+
       res.status(DefaultErrorStatus).send({ message: 'Произошла ошибка' });
     });
 };
@@ -67,6 +79,11 @@ const dislikeCard = (req, res) => {
 
       if (err.name === 'TypeError') {
         res.status(CastErrorStatus).send({ message: 'Передан несуществующий id карточки' });
+        return;
+      }
+
+      if (err.name === 'CastError') {
+        res.status(ValidationErrorStatus).send({ message: 'Передан некорректный id' });
         return;
       }
 

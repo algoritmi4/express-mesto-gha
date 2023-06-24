@@ -11,9 +11,9 @@ const getUsers = (req, res) => {
 };
 
 const getUser = (req, res) => {
-  const { userId } = req.params;
+  const { id } = req.params;
 
-  User.findOne({ _id: userId })
+  User.findOne({ _id: id })
     .then((user) => {
       if (!user) {
         res.status(CastErrorStatus).send({ message: 'Запрашиваемый пользователь не найден' });
@@ -22,7 +22,14 @@ const getUser = (req, res) => {
 
       res.status(200).send({ data: user });
     })
-    .catch(() => res.status(DefaultErrorStatus).send({ message: 'Произошла ошибка' }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(ValidationErrorStatus).send({ message: 'Передан некорректный id' });
+        return;
+      }
+
+      res.status(DefaultErrorStatus).send({ message: 'Произошла ошибка' });
+    });
 };
 
 const createUser = (req, res) => {
