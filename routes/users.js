@@ -3,12 +3,13 @@ const { celebrate, Joi } = require('celebrate');
 const {
   getUsers, getCurrentUser, getUser, updateProfile, updateAvatar,
 } = require('../controllers/users');
+const RegularURL = require('../utils/RegularURL');
 
 router.get('/', getUsers);
 router.get('/me', getCurrentUser);
 router.get('/:id', celebrate({
   params: Joi.object().keys({
-    id: Joi.string().alphanum().length(24),
+    id: Joi.string().hex().length(24).required(),
   }),
 }), getUser);
 router.patch('/me', celebrate({
@@ -19,8 +20,7 @@ router.patch('/me', celebrate({
 }), updateProfile);
 router.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    // eslint-disable-next-line no-useless-escape
-    avatar: Joi.string().required().pattern(/^https?:\/\/[a-zA-Z0-9-._~:\/?#\[\]@!$&'()*+,;=]*#?$/),
+    avatar: Joi.string().required().pattern(RegularURL),
   }),
 }), updateAvatar);
 
