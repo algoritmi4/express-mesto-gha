@@ -1,5 +1,4 @@
 const router = require('express').Router();
-// eslint-disable-next-line import/no-extraneous-dependencies
 const { celebrate, Joi } = require('celebrate');
 const {
   getUsers, getCurrentUser, getUser, updateProfile, updateAvatar,
@@ -20,7 +19,8 @@ router.patch('/me', celebrate({
 }), updateProfile);
 router.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().required(),
+    // eslint-disable-next-line no-useless-escape
+    avatar: Joi.string().required().pattern(/^https?:\/\/[a-zA-Z0-9-._~:\/?#\[\]@!$&'()*+,;=]*#?$/),
   }),
 }), updateAvatar);
 
