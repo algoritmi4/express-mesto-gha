@@ -2,7 +2,7 @@ const Card = require('../models/card');
 
 const NotFoundError = require('../errors/NotFoundError');
 const ValidationError = require('../errors/ValidationError');
-const UnauthorizedError = require('../errors/UnauthorizedError');
+const ForbiddenError = require('../errors/ForbiddenError');
 
 const getCards = (req, res, next) => {
   Card.find({})
@@ -33,7 +33,7 @@ const deleteCard = (req, res, next) => {
     .then((card) => {
       // eslint-disable-next-line eqeqeq
       if (!(card.owner == req.user._id)) {
-        throw new UnauthorizedError('Карточка не принадлежит пользователю');
+        throw new ForbiddenError('Карточка не принадлежит пользователю');
       } else {
         Card.findByIdAndRemove(req.params.id)
           .then(() => {
