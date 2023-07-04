@@ -77,7 +77,14 @@ const createUser = (req, res, next) => {
 
         next(err);
       }))
-    .catch(next);
+    .catch((err) => {
+      if (err.code === 11000) {
+        next(new ConflictError('Пользователь с таким email уже зарегестрирован'));
+        return;
+      }
+
+      next(err);
+    });
 };
 
 const updateProfile = (req, res, next) => {
